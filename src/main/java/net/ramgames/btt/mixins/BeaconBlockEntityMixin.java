@@ -28,6 +28,14 @@ public class BeaconBlockEntityMixin implements BeaconBlockEntityAccess {
     private static void preventClearIfTintedGlass(List<BeaconBlockEntity.BeamSegment> instance, Operation<Void> original, @Local(ordinal = 1) BlockPos blockPos, @Local World world, @Local BeaconBlockEntity.BeamSegment beamSegment, @Local BeaconBlockEntity beacon) {
         ((BeaconBlockEntityMixin)(Object)beacon).blockedY = blockPos.getY();
         if(!world.getBlockState(blockPos).getBlock().equals(Blocks.TINTED_GLASS)) original.call(instance);
+        for(int i = blockPos.getY() ; i <= world.getTopY(); i++) {
+            BlockPos pos = blockPos.withY(i);
+            if(world.getBlockState(pos).getBlock().equals(Blocks.TINTED_GLASS)) continue;
+            if(world.getBlockState(pos).getOpacity(world, pos) >= world.getMaxLightLevel()) {
+                original.call(instance);
+                return;
+            }
+        }
     }
 
     @Override
