@@ -1,4 +1,4 @@
-package net.ramgames.btt.mixins;
+package net.ramgames.bbg.mixins;
 
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
@@ -7,7 +7,7 @@ import net.minecraft.block.Blocks;
 import net.minecraft.block.entity.BeaconBlockEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-import net.ramgames.btt.BeaconBlockEntityAccess;
+import net.ramgames.bbg.BeaconBlockEntityAccess;
 import org.spongepowered.asm.mixin.Debug;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
@@ -40,7 +40,7 @@ public class BeaconBlockEntityMixin implements BeaconBlockEntityAccess {
 
     @Override
     @Unique
-    public int beamThroughTint$getBlockedY() {
+    public int beamBeGone$getBlockedY() {
         return blockedY;
     }
 }

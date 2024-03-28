@@ -1,21 +1,21 @@
 {
   "schemaVersion": 1,
-  "id": "btt",
+  "id": "bbg",
   "version": "${version}",
-  "name": "Beam Through Tint",
+  "name": "Beam Be Gone",
   "description": "",
   "authors": [],
   "contact": {
-    "repo": "https://github.com/RamGemes/Beam Through Tint"
+    "repo": "https://github.com/RamGemes/BeamBeGone"
   },
   "license": "MIT",
-  "icon": "assets/btt/icon.png",
+  "icon": "assets/bbg/icon.png",
   "environment": "*",
   "mixins": [
-    "btt.mixins.json"
+    "bbg.mixins.json"
   ],
   "depends": {
     "fabricloader": ">=${loader_version}",
-    "minecraft": "${minecraft_version}"
+    "minecraft": ">=1.17"
   }
 }
