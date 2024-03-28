@@ -1,0 +1,21 @@
+{
+  "schemaVersion": 1,
+  "id": "btt",
+  "version": "${version}",
+  "name": "Beam Through Tint",
+  "description": "",
+  "authors": [],
+  "contact": {
+    "repo": "https://github.com/RamGemes/Beam Through Tint"
+  },
+  "license": "MIT",
+  "icon": "assets/btt/icon.png",
+  "environment": "*",
+  "mixins": [
+    "btt.mixins.json"
+  ],
+  "depends": {
+    "fabricloader": ">=${loader_version}",
+    "minecraft": "${minecraft_version}"
+  }
+}
