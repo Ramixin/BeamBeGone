@@ -1,5 +1,5 @@
 <div style="text-align: center;">
-<img src="brand.png"  alt="AxoAmigos Logo">
+<img src="brand.png"  alt="Beam Be Gone Logo">
 <h2>
 <b>A simple mod that turns the beacon beam invisible when passing through tinted glass</b>
 </h2>

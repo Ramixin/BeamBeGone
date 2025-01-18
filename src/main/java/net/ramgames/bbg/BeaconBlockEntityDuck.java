@@ -1,6 +1,6 @@
 package net.ramgames.bbg;
 
-public interface BeaconBlockEntityAccess {
+public interface BeaconBlockEntityDuck {
 
     int beamBeGone$getBlockedY();
 

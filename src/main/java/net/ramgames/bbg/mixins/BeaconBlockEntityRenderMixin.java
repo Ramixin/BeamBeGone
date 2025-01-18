@@ -6,7 +6,10 @@ import net.minecraft.block.entity.BeaconBlockEntity;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.block.entity.BeaconBlockEntityRenderer;
 import net.minecraft.client.util.math.MatrixStack;
-import net.ramgames.bbg.BeaconBlockEntityAccess;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.World;
+import net.ramgames.bbg.BeaconBlockEntityDuck;
+import net.ramgames.bbg.BeamBeGone;
 import org.spongepowered.asm.mixin.Debug;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -22,7 +25,10 @@ public class BeaconBlockEntityRenderMixin {
     @ModifyConstant(method = "render(Lnet/minecraft/block/entity/BeaconBlockEntity;FLnet/minecraft/client/util/math/MatrixStack;Lnet/minecraft/client/render/VertexConsumerProvider;II)V", constant = @Constant(intValue = 1024))
     private int removeDefaultMaxHeightBeamIfTintedGlassBlocked(int constant, @Local(argsOnly = true) BeaconBlockEntity beacon, @Local BeaconBlockEntity.BeamSegment segment) {
         if(beacon.getWorld() == null) return constant;
-        if(beacon.getWorld().getBlockState(beacon.getPos().withY(((BeaconBlockEntityAccess)beacon).beamBeGone$getBlockedY())).getBlock().equals(Blocks.TINTED_GLASS)) return segment.getHeight();
+        World world = beacon.getWorld();
+        BlockPos pos = beacon.getPos();
+        if(!(beacon instanceof BeaconBlockEntityDuck duck)) return constant;
+        if(world.getBlockState(pos.withY(duck.beamBeGone$getBlockedY())).isIn(BeamBeGone.MAKES_BEAM_INVISIBLE)) return segment.getHeight();
         return constant;
     }
     @Inject(method = "render(Lnet/minecraft/block/entity/BeaconBlockEntity;FLnet/minecraft/client/util/math/MatrixStack;Lnet/minecraft/client/render/VertexConsumerProvider;II)V", at = @At("HEAD"), cancellable = true)
