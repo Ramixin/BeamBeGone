@@ -5,15 +5,10 @@
   "name": "Beam Be Gone",
   "description": "turns the beacon beam invisible when passing through tinted glass",
   "authors": [
-    "RamGames"
+    "Ramixin"
   ],
   "contact": {
     "repo": "https://github.com/RamGemes/BeamBeGone"
-  },
-  "entrypoints": {
-    "main": [
-
-    ]
   },
   "license": "MIT",
   "icon": "assets/bbg/icon.png",
@@ -23,6 +18,6 @@
   ],
   "depends": {
     "fabricloader": ">=${loader_version}",
-    "minecraft": ">=1.21.2"
+    "minecraft": ">=1.21.5"
   }
 }

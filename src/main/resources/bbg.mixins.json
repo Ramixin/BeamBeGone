@@ -1,15 +1,16 @@
 {
   "required": true,
   "minVersion": "0.8",
-  "package": "net.ramgames.bbg.mixins",
+  "package": "net.ramixin.bbg.mixins",
   "compatibilityLevel": "JAVA_21",
   "mixins": [
-    "BeaconBlockEntityMixin"
-  ],
-  "client": [
-    "BeaconBlockEntityRenderMixin"
+    "BeaconBlockEntityMixin",
+    "BeamSegmentMixin"
   ],
   "injectors": {
     "defaultRequire": 1
-  }
+  },
+  "client": [
+    "BeaconBlockEntityRendererMixin"
+  ]
 }

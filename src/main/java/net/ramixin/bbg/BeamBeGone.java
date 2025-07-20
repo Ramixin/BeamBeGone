@@ -1,4 +1,4 @@
-package net.ramgames.bbg;
+package net.ramixin.bbg;
 
 import net.minecraft.block.Block;
 import net.minecraft.registry.Registries;
