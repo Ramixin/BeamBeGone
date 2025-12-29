@@ -1,12 +1,12 @@
 package net.ramixin.bbg;
 
-import net.minecraft.block.entity.BeaconBlockEntity;
+import net.minecraft.world.level.block.entity.BeaconBlockEntity;
 
 import java.util.List;
 
 public interface BeaconBlockEntityDuck {
 
-    List<BeaconBlockEntity.BeamSegment> beamBeGone$getBeamBuffer();
+    List<BeaconBlockEntity.Section> beamBeGone$getCheckingBeamSections();
 
     boolean beamBeGone$isInvisiblePresent();
 

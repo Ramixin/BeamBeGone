@@ -1,11 +1,11 @@
 package net.ramixin.bbg;
 
-import net.minecraft.block.Block;
-import net.minecraft.registry.Registries;
-import net.minecraft.registry.tag.TagKey;
-import net.minecraft.util.Identifier;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.Identifier;
+import net.minecraft.tags.TagKey;
+import net.minecraft.world.level.block.Block;
 
 public interface BeamBeGone {
 
-    TagKey<Block> MAKES_BEAM_INVISIBLE = TagKey.of(Registries.BLOCK.getKey(), Identifier.of("bbg","makes_beam_invisible"));
+    TagKey<Block> MAKES_BEAM_INVISIBLE = TagKey.create(Registries.BLOCK, Identifier.fromNamespaceAndPath("bbg","makes_beam_invisible"));
 }

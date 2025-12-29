@@ -1,23 +1,32 @@
 package net.ramixin.bbg.mixins;
 
+import com.llamalad7.mixinextras.injector.ModifyReturnValue;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.llamalad7.mixinextras.sugar.Local;
-import net.minecraft.block.entity.BeaconBlockEntity;
-import net.minecraft.client.render.VertexConsumerProvider;
-import net.minecraft.client.render.block.entity.BeaconBlockEntityRenderer;
-import net.minecraft.client.util.math.MatrixStack;
-import net.ramixin.bbg.BeamSegmentDuck;
+import com.mojang.blaze3d.vertex.PoseStack;
+import net.minecraft.client.renderer.SubmitNodeCollector;
+import net.minecraft.client.renderer.blockentity.BeaconRenderer;
+import net.minecraft.client.renderer.blockentity.state.BeaconRenderState;
+import net.minecraft.world.level.block.entity.BeaconBeamOwner;
+import net.ramixin.bbg.SectionDuck;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 
-@Mixin(BeaconBlockEntityRenderer.class)
+@Mixin(BeaconRenderer.class)
 public class BeaconBlockEntityRendererMixin {
 
-    @WrapOperation(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/block/entity/BeaconBlockEntityRenderer;renderBeam(Lnet/minecraft/client/util/math/MatrixStack;Lnet/minecraft/client/render/VertexConsumerProvider;FFJIII)V"))
-    private void preventRenderIfNoAlpha(MatrixStack matrices, VertexConsumerProvider vertexConsumers, float tickProgress, float scale, long worldTime, int yOffset, int maxY, int color, Operation<Void> original, @Local BeaconBlockEntity.BeamSegment segment) {
-        if(!BeamSegmentDuck.get(segment).beamBeGone$isInvisible()) original.call(matrices, vertexConsumers, tickProgress, scale, worldTime, yOffset, maxY, color);
+    @WrapOperation(method = "submit(Lnet/minecraft/client/renderer/blockentity/state/BeaconRenderState;Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/SubmitNodeCollector;Lnet/minecraft/client/renderer/state/CameraRenderState;)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/blockentity/BeaconRenderer;submitBeaconBeam(Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/SubmitNodeCollector;FFIII)V"))
+    private void preventRenderIfNoAlpha(PoseStack poseStack, SubmitNodeCollector submitNodeCollector, float f, float g, int i, int j, int k, Operation<Void> original, @Local BeaconRenderState.Section section) {
+        if(!SectionDuck.get(section).beamBeGone$isInvisible()) original.call(poseStack, submitNodeCollector, f, g, i, j, k);
     }
 
+    @ModifyReturnValue(method = "method_74339", at = @At(value = "RETURN"))
+    private static BeaconRenderState.Section transferSectionVisibilityOnExtract(BeaconRenderState.Section original, @Local(argsOnly = true) BeaconBeamOwner.Section blockSection) {
+        SectionDuck blockDuck = SectionDuck.get(blockSection);
+        SectionDuck returnDuck = SectionDuck.get(original);
+        returnDuck.beamBeGone$setInvisible(blockDuck.beamBeGone$isInvisible());
+        return original;
+    }
 
 }

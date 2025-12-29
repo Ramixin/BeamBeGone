@@ -4,14 +4,15 @@ import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.llamalad7.mixinextras.sugar.Local;
 import com.llamalad7.mixinextras.sugar.ref.LocalRef;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.entity.BeaconBlockEntity;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.entity.BeaconBeamOwner;
+import net.minecraft.world.level.block.entity.BeaconBlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
 import net.ramixin.bbg.BeaconBlockEntityDuck;
 import net.ramixin.bbg.BeamBeGone;
-import net.ramixin.bbg.BeamSegmentDuck;
+import net.ramixin.bbg.SectionDuck;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
@@ -24,63 +25,63 @@ import java.util.List;
 @Mixin(BeaconBlockEntity.class)
 public class BeaconBlockEntityMixin implements BeaconBlockEntityDuck {
 
-    @Shadow private List<BeaconBlockEntity.BeamSegment> field_19178;
+    @Shadow private List<BeaconBeamOwner.Section> checkingBeamSections;
 
     @Unique
     private boolean invisiblePresent = false;
 
     @Inject(method = "tick", at = @At(value = "INVOKE", target = "Lcom/google/common/collect/Lists;newArrayList()Ljava/util/ArrayList;", remap = false))
-    private static void resetInvisiblePresent(World world, BlockPos pos, BlockState state, BeaconBlockEntity blockEntity, CallbackInfo ci) {
+    private static void resetInvisiblePresent(Level level, BlockPos blockPos, BlockState blockState, BeaconBlockEntity blockEntity, CallbackInfo ci) {
         BeaconBlockEntityDuck.get(blockEntity).beamBeGone$setInvisiblePresent(false);
     }
 
-    @WrapOperation(method = "tick", at = @At(value = "INVOKE", target = "Lnet/minecraft/block/BlockState;isOf(Lnet/minecraft/block/Block;)Z"))
-    private static boolean preventBuildCancelIfTinted(BlockState instance, Block block, Operation<Boolean> original, @Local LocalRef<BeaconBlockEntity.BeamSegment> segmentRef, @Local(argsOnly = true) BeaconBlockEntity beaconBlockEntity) {
-        if (!instance.isIn(BeamBeGone.MAKES_BEAM_INVISIBLE)) return original.call(instance, block);
-        BeaconBlockEntity.BeamSegment segment = segmentRef.get();
-        BeaconBlockEntity.BeamSegment newSegment = new BeaconBlockEntity.BeamSegment(segment.getColor());
-        boolean invisible = BeamSegmentDuck.get(segment).beamBeGone$isInvisible();
+    @WrapOperation(method = "tick", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/block/state/BlockState;is(Lnet/minecraft/world/level/block/Block;)Z"))
+    private static boolean preventBuildCancelIfTinted(BlockState instance, Block block, Operation<Boolean> original, @Local LocalRef<BeaconBlockEntity.Section> sectionRef, @Local(argsOnly = true) BeaconBlockEntity beaconBlockEntity) {
+        if (!instance.is(BeamBeGone.MAKES_BEAM_INVISIBLE)) return original.call(instance, block);
+        BeaconBlockEntity.Section segment = sectionRef.get();
+        BeaconBlockEntity.Section newSegment = new BeaconBlockEntity.Section(segment.getColor());
+        boolean invisible = SectionDuck.get(segment).beamBeGone$isInvisible();
         if(BeaconBlockEntityDuck.get(beaconBlockEntity).beamBeGone$isInvisiblePresent())
-            BeamSegmentDuck.get(segment).beamBeGone$decrementHeight();
+            SectionDuck.get(segment).beamBeGone$decrementHeight();
         if(!invisible)
             BeaconBlockEntityDuck.get(beaconBlockEntity).beamBeGone$setInvisiblePresent(true);
         else {
-            BeamSegmentDuck.get(segment).beamBeGone$incrementHeight();
-            BeamSegmentDuck.get(newSegment).beamBeGone$decrementHeight();
+            SectionDuck.get(segment).beamBeGone$incrementHeight();
+            SectionDuck.get(newSegment).beamBeGone$decrementHeight();
         }
-        BeamSegmentDuck.get(newSegment).beamBeGone$setInvisible(!invisible);
+        SectionDuck.get(newSegment).beamBeGone$setInvisible(!invisible);
 
-        segmentRef.set(newSegment);
-        ((BeaconBlockEntityDuck)beaconBlockEntity).beamBeGone$getBeamBuffer().add(newSegment);
+        sectionRef.set(newSegment);
+        ((BeaconBlockEntityDuck)beaconBlockEntity).beamBeGone$getCheckingBeamSections().add(newSegment);
         return true;
     }
 
     @WrapOperation(method = "tick", at = @At(value = "INVOKE", target = "Ljava/util/List;add(Ljava/lang/Object;)Z"))
     private static boolean propagateInvisibleField(List<Object> instance, Object e, Operation<Boolean> original, @Local(argsOnly = true) BeaconBlockEntity beaconBlockEntity) {
         if(instance.isEmpty()) return original.call(instance, e);
-        if(!(e instanceof BeaconBlockEntity.BeamSegment beamSegment)) return original.call(instance, e);
-        if(!(instance.getLast() instanceof BeaconBlockEntity.BeamSegment top)) return original.call(instance, e);
-        BeamSegmentDuck.get(beamSegment).beamBeGone$setInvisible(BeamSegmentDuck.get(top).beamBeGone$isInvisible());
+        if(!(e instanceof BeaconBeamOwner.Section beamSegment)) return original.call(instance, e);
+        if(!(instance.getLast() instanceof BeaconBlockEntity.Section top)) return original.call(instance, e);
+        SectionDuck.get(beamSegment).beamBeGone$setInvisible(SectionDuck.get(top).beamBeGone$isInvisible());
 
         if(BeaconBlockEntityDuck.get(beaconBlockEntity).beamBeGone$isInvisiblePresent()) {
-            BeamSegmentDuck.get(top).beamBeGone$decrementHeight();
-            BeamSegmentDuck.get(beamSegment).beamBeGone$incrementHeight();
+            SectionDuck.get(top).beamBeGone$decrementHeight();
+            SectionDuck.get(beamSegment).beamBeGone$incrementHeight();
         }
 
         return original.call(instance, e);
     }
 
-    @Inject(method = "tick", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/World;getBottomY()I"))
-    private static void turnFirstSegmentInvisibleIfDirectGlass(World world, BlockPos pos, BlockState state, BeaconBlockEntity blockEntity, CallbackInfo ci) {
-        if(!world.getBlockState(pos.up()).isIn(BeamBeGone.MAKES_BEAM_INVISIBLE)) return;
-        List<BeaconBlockEntity.BeamSegment> beamBuffer = BeaconBlockEntityDuck.get(blockEntity).beamBeGone$getBeamBuffer();
+    @Inject(method = "tick", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/Level;getMinY()I"))
+    private static void turnFirstSegmentInvisibleIfDirectGlass(Level level, BlockPos pos, BlockState blockState, BeaconBlockEntity blockEntity, CallbackInfo ci) {
+        if(!level.getBlockState(pos.above()).is(BeamBeGone.MAKES_BEAM_INVISIBLE)) return;
+        List<BeaconBeamOwner.Section> beamBuffer = BeaconBlockEntityDuck.get(blockEntity).beamBeGone$getCheckingBeamSections();
         if(beamBuffer.isEmpty()) return;
-        BeamSegmentDuck.get(beamBuffer.getFirst()).beamBeGone$setInvisible(true);
+        SectionDuck.get(beamBuffer.getFirst()).beamBeGone$setInvisible(true);
     }
 
     @Override
-    public List<BeaconBlockEntity.BeamSegment> beamBeGone$getBeamBuffer() {
-        return field_19178;
+    public List<BeaconBlockEntity.Section> beamBeGone$getCheckingBeamSections() {
+        return checkingBeamSections;
     }
 
     @Override

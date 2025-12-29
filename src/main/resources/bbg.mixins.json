@@ -5,12 +5,13 @@
   "compatibilityLevel": "JAVA_21",
   "mixins": [
     "BeaconBlockEntityMixin",
-    "BeamSegmentMixin"
+    "BlockSectionMixin"
   ],
   "injectors": {
     "defaultRequire": 1
   },
   "client": [
-    "BeaconBlockEntityRendererMixin"
+    "BeaconBlockEntityRendererMixin",
+    "StateSectionMixin"
   ]
 }
