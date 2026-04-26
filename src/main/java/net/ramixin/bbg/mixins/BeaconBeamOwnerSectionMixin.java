@@ -1,12 +1,18 @@
 package net.ramixin.bbg.mixins;
 
-import net.minecraft.client.renderer.blockentity.state.BeaconRenderState;
+import net.minecraft.world.level.block.entity.BeaconBeamOwner;
 import net.ramixin.bbg.SectionDuck;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
 
-@Mixin(BeaconRenderState.Section.class)
-public class StateSectionMixin implements SectionDuck {
+@Mixin(BeaconBeamOwner.Section.class)
+public abstract class BeaconBeamOwnerSectionMixin implements SectionDuck {
+
+    @Shadow private int height;
+
+    @Shadow
+    public abstract void increaseHeight();
 
     @Unique
     private boolean invisible = false;
@@ -24,11 +30,11 @@ public class StateSectionMixin implements SectionDuck {
 
     @Override
     public void beamBeGone$decrementHeight() {
-        throw new IllegalCallerException("Cannot decrement height of a section in render state");
+        --height;
     }
 
     @Override
     public void beamBeGone$incrementHeight() {
-        throw new IllegalCallerException("Cannot increment height of a section in render state");
+        increaseHeight();
     }
 }
